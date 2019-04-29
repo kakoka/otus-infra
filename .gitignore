@@ -1,0 +1,15 @@
+#  Local .terraform directories
+**/.terraform/*
+# .tfstate files
+*.tfstate
+*.tfstate.*
+# .tfvars files
+*.tfvars
+# secrets
+otus-user.creds
+providers.tf
+# ansible
+*.retry
+.DS_Store
+._.DS_Store
+._.*

@@ -1,0 +1,32 @@
+---
+- name: creating new volume group
+  lvg:
+    vg: "{{ vgname }}"
+    pvs: "{{ disk }}"
+    state: present
+
+- name: creating new logical volume
+  lvol:
+    pvs: "{{ disk }}"
+    vg: "{{ vgname }}"
+    lv: "{{ lvname }}"
+    size: "{{ size }}"
+
+- name: creating new filesystem on logical volume
+  filesystem: 
+    fstype: "{{ filesystem }}"
+    dev: /dev/{{ vgname }}/{{ lvname }}
+
+- name: create mountpoint
+  file:
+    path: "{{ mountpoint }}"
+    state: directory
+    mode: 0755
+
+- name: mounting new filesystem
+  mount: 
+    name: "{{ mountpoint }}"
+    src: /dev/{{ vgname }}/{{ lvname }} 
+    fstype: "{{ filesystem }}" 
+    state: mounted
+...

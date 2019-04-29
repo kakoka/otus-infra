@@ -1,0 +1,29 @@
+---
+- hosts: nfs
+  become: yes
+  gather_facts: yes
+  roles:
+    - { role: etcd, tags: etcd }
+    - { role: haproxy, tags: haproxy }
+  environment:
+        http_proxy: http://bastion:8888
+        https_proxy: http://bastion:8888
+- hosts: database
+  become: yes
+  gather_facts: yes
+  roles:
+    - { role: pgsql11, tags: db }
+    - { role: patroni, tags: patroni }
+  environment:
+        http_proxy: http://bastion:8888
+        https_proxy: http://bastion:8888
+- hosts: disks
+  become: yes
+  gather_facts: yes
+  roles:
+    - { role: pgsql11, tags: db }
+    - { role: patroni, tags: patroni }
+  environment:
+        http_proxy: http://bastion:8888
+        https_proxy: http://bastion:8888
+...

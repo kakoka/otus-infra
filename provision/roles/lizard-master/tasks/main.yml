@@ -1,0 +1,71 @@
+# Chunkserver
+#
+# export https_proxy=http://bastion:8888 && \
+# wget https://lizardfs.com/wp-content/uploads/2018/07/lizardfs-bundle-CentOS-7.5.1804.tar && \
+# tar -xvf lizardfs-bundle-CentOS-7.5.1804.tar && \
+# cd lizardfs-bundle-CentOS-7.5.1804 && \
+# rpm -Uvh lizardfs-chunkserver-3.13.0-0el7.x86_64.rpm
+# Master + uraft
+# export https_proxy=http://bastion:8888 && \
+# yum install -y boost-system boost-devel boost-program-options && \
+# wget https://lizardfs.com/wp-content/uploads/2018/07/lizardfs-bundle-CentOS-7.5.1804.tar && \
+# tar -xvf lizardfs-bundle-CentOS-7.5.1804.tar && \
+# cd lizardfs-bundle-CentOS-7.5.1804 && \
+# rpm -Uvh lizardfs-master-3.13.0-0el7.x86_64.rpm && \
+# rpm -Uvh lizardfs-adm-3.13.0-0el7.x86_64.rpm && \
+# rpm -Uvh lizardfs-uraft-3.13.0-0el7.x86_64.rpm && \
+# echo "net.ipv4.conf.all.arp_accept = 1" >> /etc/sysctl.conf && \
+# sysctl -p
+#
+
+---
+- name: install dependencies
+  yum:
+    name: ['boost-system','boost-devel','boost-program-options']
+    state: present
+
+- name: get lizard
+  command: wget -q https://lizardfs.com/wp-content/uploads/2018/07/{{ bundle }}.tar
+
+- name: untar lizard
+  command: tar -xvf {{ bundle }}.tar
+
+- name: install lizardfs-master
+  command: rpm -Uvh {{ bundle }}/lizardfs-master-3.13.0-0el7.x86_64.rpm
+
+- name: install lizardfs-adm
+  command: rpm -Uvh {{ bundle }}/lizardfs-adm-3.13.0-0el7.x86_64.rpm
+
+- name: install lizardfs-uraft
+  command: rpm -Uvh {{ bundle }}/lizardfs-uraft-3.13.0-0el7.x86_64.rpm
+
+- name: set values to sysctl
+  sysctl:
+    name: net.ipv4.conf.all.arp_accept
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Add mfsmaster.conf
+  template: 
+    src: mfsmaster.conf.j2
+    dest: /etc/mfs/mfsmaster.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Add lizardfs_uraft.conf
+  template: 
+    src: lizardfs_uraft.conf.j2
+    dest: /etc/mfs/lizardfs_uraft.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Set lizardfs-chunkserver as a service
+  systemd:
+    name: lizardfs-uraft
+    enabled: yes
+    state: started
+    masked: no

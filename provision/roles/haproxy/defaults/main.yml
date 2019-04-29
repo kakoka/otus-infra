@@ -1,0 +1,7 @@
+---
+# defaults file for haproxy
+
+pg_hosts: 
+  - { name: 'db1', status: 'rw' }
+  - { name: 'db2', status: 'ro' }
+  - { name: 'db3', status: 'ro' }

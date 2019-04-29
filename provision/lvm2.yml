@@ -1,0 +1,10 @@
+---
+- hosts: disks
+  become: yes
+  gather_facts: yes
+  roles:
+    - { role: lvm2, tags: lizard }
+  environment:
+        http_proxy: http://bastion:8888
+        https_proxy: http://bastion:8888
+...

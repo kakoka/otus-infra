@@ -1,0 +1,24 @@
+#cloud-config
+users:
+  - name: otus-user
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDD8QvXDcP3zP3foG11y5uulod685ll8yR9z2a6gb2DXO0bWY9fckXUfDZpaUZSNUcw7zThsbgY5iZVOCGUXihQtxaXhFzBYN1x1HMB52sTLOMEd2v3Y7MN9Tq1ka9iY+URsp0bkENko3kqWYwe8BkyTpyYZMTqBxwhoXYN+C8qMdHu2oM1l6GApx93tWrH4JcCCWCji7vR2EjWkZgAoORXQ/wnJd9P1a5YaVFHOpuBmF4FiwcRcDEdAW1bRLAd0u3vU5/qNMN1fUwW+aCy56BwoJEYgRWUBwFs7wRwOCqyMyoMnI/Pdrb/xCqLQADfEJkIQyW71ZnlLtbznZzo1Nf5cSDJmSLhFEo8kRB9GPxS+vGrGCnK4zaoRrxiN0PszD3OzFh32l2yC7oCyr5r3u2UlVgsOr+96czWpPNiG6rBjVv7rchhbnlczW3lsI3rqFWHWs646/P5NozfwPq1YFAAn4eDhCMOjH2IK1mhGZ2sD+C3HGz9QmE7mytIQ9pPPdynvqfMy+d0436A0QmhKQrtEq/ZkHCDFmxbYUbAvGp4XhFSLRQkKM+UU+QldHcgQSqBEH89RVZga0nqveZEmpb+uIrDwjv5yYp58q/b6QbTMeh5faozcUWRCEA+6XclIPclaqQ3FnAMpQxU0D7k15b9OTFNvVeJG/4Sjc7kbG9/GQ== root@bastion.ru-central1.internal
+disable_root: true
+timezone: Europe/Moscow
+repo_update: true
+repo_upgrade: true
+yum:
+  preserve_sources_list: true
+
+write_files:
+    - path: /etc/environment
+      permissions: 0644
+      content: |
+        http_proxy=http://bastion:8888
+        https_proxy=http://bastion:8888
+runcmd:
+  - sh -c "echo 'proxy=http://bastion:8888' >> /etc/yum.conf"
+  - yum install -y epel-release
